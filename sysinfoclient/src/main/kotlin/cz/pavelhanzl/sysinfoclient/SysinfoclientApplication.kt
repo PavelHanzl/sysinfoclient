@@ -2,14 +2,15 @@ package cz.pavelhanzl.sysinfoclient
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
 import java.lang.management.ThreadMXBean
+import org.springframework.scheduling.annotation.EnableScheduling
 
 
 @SpringBootApplication
+@EnableScheduling
 class SysinfoclientApplication
 
 fun main(args: Array<String>) {
@@ -41,6 +42,9 @@ fun main(args: Array<String>) {
 		)
 	)
 
+
+
+
 	val threadMXBean: ThreadMXBean = ManagementFactory.getThreadMXBean()
 
 	for (threadID in threadMXBean.getAllThreadIds()) {
@@ -60,9 +64,5 @@ fun main(args: Array<String>) {
 	println("Free space: ${cDrive.getFreeSpace() / 1073741824} GB")
 	println("Usable space: ${cDrive.getUsableSpace() / 1073741824} GB")
 
-	val webSocketClient = StandardWebSocketClient()
-	val handler = ClientWebSocketHandler()
-	val uri = "ws://server:8080/websocket-endpoint"
-	webSocketClient.doHandshake(handler, uri).get()
 
 }
