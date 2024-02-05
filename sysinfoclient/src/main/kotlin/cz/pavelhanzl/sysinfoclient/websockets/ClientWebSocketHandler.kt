@@ -51,7 +51,7 @@ class ClientWebSocketHandler : WebSocketHandler {
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, closeStatus: CloseStatus) {
-        println("Connection closed")
+       session.close()
     }
 
     override fun supportsPartialMessages(): Boolean {
@@ -59,7 +59,7 @@ class ClientWebSocketHandler : WebSocketHandler {
     }
 
     fun sendMessage(message: String) {
-        if (session != null) {
+        if (session != null && session!!.isOpen) {
             session?.sendMessage(TextMessage(message))
         } else {
             println("Session is not established. Trying to re-establish.")

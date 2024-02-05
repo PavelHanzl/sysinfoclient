@@ -16,6 +16,12 @@ class SysinfoclientApplication
 fun main(args: Array<String>) {
 	runApplication<SysinfoclientApplication>(*args)
 
+	//othermetricstobedeleted()
+
+
+}
+
+private fun othermetricstobedeleted() {
 	val memoryMXBean = ManagementFactory.getMemoryMXBean()
 	println(
 		String.format(
@@ -43,8 +49,6 @@ fun main(args: Array<String>) {
 	)
 
 
-
-
 	val threadMXBean: ThreadMXBean = ManagementFactory.getThreadMXBean()
 
 	for (threadID in threadMXBean.getAllThreadIds()) {
@@ -63,6 +67,4 @@ fun main(args: Array<String>) {
 	println("Total space: ${cDrive.getTotalSpace() / 1073741824} GB")
 	println("Free space: ${cDrive.getFreeSpace() / 1073741824} GB")
 	println("Usable space: ${cDrive.getUsableSpace() / 1073741824} GB")
-
-
 }

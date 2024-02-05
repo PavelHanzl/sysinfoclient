@@ -42,15 +42,15 @@ class SendClientsSysinfoToServer(private val clientWebSocketHandler: ClientWebSo
             var largeArray:Array<IntArray>?
             while (isActive) {
                 counter++
-                delay(5000) // Čekání 5s
+                delay(3000) // Čekání 3s
 
                 //uměle zaplní paměť
-                if (counter==3){
-                    largeArray = Array(1_000_000) { IntArray(Random.nextInt(10, 20)) }
+                if (counter==7){
+                    largeArray = Array(1_000_000) { IntArray(Random.nextInt(10, 30)) }
                 }
 
                 //uměle uvolní paměť explicitním spuštěním garbage collectoru
-                if (counter==7){
+                if (counter==10){
                     largeArray=null
                     System.gc()
                 }
