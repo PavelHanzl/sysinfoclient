@@ -1,25 +1,49 @@
 package cz.pavelhanzl.sysinfoclient.websockets
 
 
-import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Service
 import org.springframework.web.socket.*
 import org.springframework.web.socket.client.standard.StandardWebSocketClient
 import org.springframework.web.socket.handler.TextWebSocketHandler
-
+import java.io.FileInputStream
+import java.security.KeyStore
+import java.security.SecureRandom
+import javax.net.ssl.*
 
 
 @Service
 class ClientWebSocketHandler : WebSocketHandler {
 
+
+
+
+
     private val client = StandardWebSocketClient()
     private var session: WebSocketSession? = null
-    private var uri = "ws://server:8080/websocket-endpoint"
+    private var uri = "wss://server:443/websocket-endpoint"
+    //private var uri = "ws://server:8080/websocket-endpoint"
+
+
 
 
 
     init {
+        tlsConfiguration()
         establishSession()
+    }
+
+    private fun tlsConfiguration() {
+        val trustStore = KeyStore.getInstance(KeyStore.getDefaultType())
+        val trustStorePassword = "123456Ab"
+        trustStore.load(FileInputStream("../certs/truststore.jks"), trustStorePassword.toCharArray())
+
+        val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        tmf.init(trustStore)
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, tmf.trustManagers, SecureRandom())
+
+        client.userProperties["org.apache.tomcat.websocket.SSL_CONTEXT"] = sslContext
     }
 
     private fun establishSession() {
@@ -32,7 +56,8 @@ class ClientWebSocketHandler : WebSocketHandler {
         if (System.getenv("SRV_PORT") != null) {
             client.doHandshake(handler, uri)
         } else {
-            uri = "ws://localhost:8080/websocket-endpoint"
+            uri = "wss://localhost:443/websocket-endpoint"
+            //uri = "ws://localhost:8080/websocket-endpoint"
             client.doHandshake(handler, uri)
         }
     }
