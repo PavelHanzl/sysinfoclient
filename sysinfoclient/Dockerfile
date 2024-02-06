@@ -11,5 +11,3 @@ RUN ./gradlew clean build -x test
 
 # Run the app
 CMD ["java", "-jar", "./build/libs/sysinfoclient-0.0.1-SNAPSHOT.jar"]
-
-RUN keytool -import -alias myalias -keystore $JAVA_HOME/lib/security/cacerts -file /sysinfoclient/src/main/resources/certs/mycert.cer -storepass changeit -noprompt
