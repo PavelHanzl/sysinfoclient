@@ -9,6 +9,7 @@ import java.io.FileInputStream
 import java.security.KeyStore
 import java.security.SecureRandom
 import javax.net.ssl.*
+import org.springframework.core.io.ClassPathResource
 
 
 @Service
@@ -24,7 +25,8 @@ class ClientWebSocketHandler : WebSocketHandler {
     //private var uri = "ws://server:8080/websocket-endpoint"
 
 
-
+    // Kontrola, zda aplikace běží v Dockeru
+    val isDockerEnv = System.getenv("DOCKER_ENV")?.toBoolean() ?: false
 
 
     init {
@@ -35,7 +37,21 @@ class ClientWebSocketHandler : WebSocketHandler {
     private fun tlsConfiguration() {
         val trustStore = KeyStore.getInstance(KeyStore.getDefaultType())
         val trustStorePassword = "123456Ab"
-        trustStore.load(FileInputStream("../certs/truststore.jks"), trustStorePassword.toCharArray())
+
+
+
+
+
+        if (isDockerEnv) {
+            // Aplikace běží v Dockeru, použij výchozí truststore
+            trustStore.load(null, null)
+            println("Runing in docker")
+        } else {
+            // Aplikace běží lokálně, načti vlastní truststore
+            trustStore.load(ClassPathResource("/certs/truststore.jks").inputStream, trustStorePassword.toCharArray())
+        }
+
+
 
         val tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
         tmf.init(trustStore)
@@ -52,8 +68,8 @@ class ClientWebSocketHandler : WebSocketHandler {
                 this@ClientWebSocketHandler.session = session
             }
         }
-        //if not runing in docker, then handshake with default uri, else runing localy and handshake with local uri
-        if (System.getenv("SRV_PORT") != null) {
+        //if is runing in docker, then handshake with default uri, else runing localy and handshake with local uri
+        if (isDockerEnv) {
             client.doHandshake(handler, uri)
         } else {
             uri = "wss://localhost:443/websocket-endpoint"
